@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeZone TV - Dashboard Mobile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Mockup do Celular (Shark Tank Style) */
+        .phone-frame {
+            width: 380px;
+            height: 780px;
+            background: #090d16;
+            border-radius: 45px;
+            border: 12px solid #1e293b;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Notch do Smartphone */
+        .notch {
+            width: 140px;
+            height: 25px;
+            background: #1e293b;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            flex: 1;
+            padding: 40px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        /* Top Bar */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .app-title span {
+            color: #6366f1;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .status-badge.connected {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        /* Painel Conexão Hardware */
+        .hardware-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        select,
+        button {
+            background: #0f172a;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            padding: 8px 12px;
+            border-radius: 10px;
+            outline: none;
+            font-size: 13px;
+        }
+
+        select {
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+        }
+
+        /* Card Principal da TV */
+        .tv-card {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .tv-card.danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(225, 29, 72, 0.1));
+            border-color: rgba(239, 68, 68, 0.5);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .tv-icon {
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        .tv-status-text {
+            color: #f8fafc;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .tv-subtext {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Metrics Row */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .metric-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .metric-title {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* Quick Action Switch (Modo Pais) */
+        .switch-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .switch-info h4 {
+            color: #f8fafc;
+            font-size: 14px;
+        }
+
+        .switch-info p {
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        /* Toggle Button */
+        .toggle-btn {
+            width: 48px;
+            height: 26px;
+            background: #334155;
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .toggle-btn::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: #6366f1;
+        }
+
+        .toggle-btn.active::after {
+            left: 25px;
+        }
+
+        /* Log Section */
+        .log-section {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-title {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .log-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-family: monospace;
+            font-size: 10px;
+            color: #cbd5e1;
+        }
+
+        .log-item {
+            background: rgba(30, 41, 59, 0.4);
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone-frame">
+        <div class="notch"></div>
+        <div class="phone-screen">
+
+            <!-- Header -->
+            <div class="header">
+                <h1 class="app-title">SafeZone <span>TV</span></h1>
+                <div id="badge-status" class="status-badge">Desconectado</div>
+            </div>
+
+            <!-- Seleção de Hardware -->
+            <div class="hardware-panel">
+                <select id="select-porta">
+                    <option value="">Selecione a Porta COM</option>
+                </select>
+                <button class="btn-primary" onclick="conectarHardware()">Conectar</button>
+            </div>
+
+            <!-- Card Central da TV -->
+            <div id="tv-card" class="tv-card">
+                <div class="tv-icon">📺</div>
+                <div id="tv-status" class="tv-status-text">TV LIGADA</div>
+                <div id="tv-subtext" class="tv-subtext">Distância da Criança: Segura</div>
+            </div>
+
+            <!-- Métricas -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Proteções Hoje</div>
+                    <div id="val-alertas" class="metric-value">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Sinal IR Capturado</div>
+                    <div id="val-ir" class="metric-value" style="font-size: 12px; line-height: 24px;">Nenhum</div>
+                </div>
+            </div>
+
+            <!-- Regra de Negócio: Modo Pais -->
+            <div class="switch-card">
+                <div class="switch-info">
+                    <h4>Modo Pais (Bypass)</h4>
+                    <p>Desativa o bloqueio temporariamente</p>
+                </div>
+                <div id="toggle-pais" class="toggle-btn" onclick="toggleModoPais()"></div>
+            </div>
+
+            <!-- Histórico de Eventos -->
+            <div class="log-section">
+                <div class="log-title">HISTÓRICO EM TEMPO REAL</div>
+                <div id="log-list" class="log-list">
+                    <div class="log-item">Sistema inicializado. Aguardando conexão...</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        async function carregarPortas() {
+            const res = await fetch('/api/portas');
+            const portas = await res.json();
+            const select = document.getElementById('select-porta');
+            select.innerHTML = '<option value="">Selecione a Porta COM</option>';
+            portas.forEach(p => {
+                select.innerHTML += `<option value="${p}">${p}</option>`;
+            });
+        }
+
+        async function conectarHardware() {
+            const porta = document.getElementById('select-porta').value;
+            if (!porta) return alert("Selecione a porta serial!");
+
+            const res = await fetch('/api/conectar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ porta: porta })
+            });
+            const data = await res.json();
+            if (!data.sucesso) alert("Erro ao conectar: " + data.erro);
+        }
+
+        async function toggleModoPais() {
+            const res = await fetch('/api/toggle_modo_pais', { method: 'POST' });
+            const data = await res.json();
+            const btn = document.getElementById('toggle-pais');
+            if (data.modo_pais) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        async function atualizarDashboard() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+
+                // Status de Conexão
+                const badge = document.getElementById('badge-status');
+                badge.innerText = data.status_conexao;
+                if (data.status_conexao === "Conectado") {
+                    badge.classList.add('connected');
+                } else {
+                    badge.classList.remove('connected');
+                }
+
+                // Card da TV
+                const tvCard = document.getElementById('tv-card');
+                const tvStatus = document.getElementById('tv-status');
+                const tvSub = document.getElementById('tv-subtext');
+
+                if (data.modo_pais) {
+                    tvCard.className = "tv-card";
+                    tvStatus.innerText = "MODO PAIS ATIVO";
+                    tvSub.innerText = "Proteção suspensa manualmente";
+                } else if (data.crianca_proxima) {
+                    tvCard.className = "tv-card danger";
+                    tvStatus.innerText = "TV DESLIGADA";
+                    tvSub.innerText = "⚠️ Criança muito próxima da tela!";
+                } else {
+                    tvCard.className = "tv-card";
+                    tvStatus.innerText = "TV LIGADA";
+                    tvSub.innerText = "Distância da Criança: Segura";
+                }
+
+                // Métricas
+                document.getElementById('val-alertas').innerText = data.alertas_hoje;
+                document.getElementById('val-ir').innerText = data.ultimo_codigo_ir || "Nenhum";
+
+                // Logs
+                const logList = document.getElementById('log-list');
+                logList.innerHTML = data.historico_log.map(l => `<div class="log-item">${l}</div>`).join('');
+
+            } catch (e) { }
+        }
+
+        carregarPortas();
+        setInterval(atualizarDashboard, 500);
+    </script>
+
+</body>
+
+</html>
